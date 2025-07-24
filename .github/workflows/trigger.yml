@@ -15,12 +15,17 @@ jobs:
           echo "MANIFEST=main" >> $GITHUB_ENV
       - name: Test
         run: |
-          echo ${MANIFEST}
-          echo ${{ env.MANIFEST }}
-      # - name: Repository Dispatch
-      #   uses: peter-evans/repository-dispatch@v3
-      #   with:
-      #     token: ${{ secrets.TOKEN }}
-      #     repository: AAndrisa/adi-kuiper-gen
-      #     event-type: my-event
-      #     client-payload: '{"ref": "${{ github.ref_name }}", "sha": "${{ github.sha }}"}'
+          #!/bin/bash
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Content-Type: application/json" \
+          https://api.github.com/repos/${{ secrets.PRIVATE_ORG_NAME }}/${{ secrets.PRIVATE_REPO_NAME }}/dispatches \
+            -d '{
+              "event_type": "external_trigger",
+              "client_payload": {
+                "source": "manual_trigger",
+                "environment": "production",
+                "message": "Triggered via curl"
+              }
+            }'
