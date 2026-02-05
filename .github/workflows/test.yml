@@ -1,12 +1,25 @@
 name: test
 on:
-  repository_dispatch:
-    types: [external_trigger]
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-  test:
-    runs-on: self-hosted
+  Build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: 32
+            build_type: basic
+            os: ubuntu-24.04-arm
+          - arch: 32
+            build_type: basic
+            os: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Run
-        run: echo "Hello, World!"
+      - uses: actions/checkout@v4
+        if: ${{ matrix.os != 'ubuntu-latest' || github.event_name == 'pull_request' }}
