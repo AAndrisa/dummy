@@ -13,13 +13,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        arch: [32]
+        build_type: [basic]
         include:
           - arch: 32
             build_type: basic
             os: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+  Build2:
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
           - arch: 32
             build_type: basic
             os: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        if: ${{ matrix.os != 'ubuntu-latest' || github.event_name == 'pull_request' }}
